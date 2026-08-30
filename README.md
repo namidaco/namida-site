@@ -1,20 +1,7 @@
 # namida-site
 
-Landing page for [namida](https://github.com/namidaco/namida), served at **https://namida.app**.
+### Official website page for [namida](https://github.com/namidaco/namida), Available at [namida.app](https://namida.app).
 
-Plain static HTML, no build step. Edit `index.html` and push to `main` — the
-[deploy workflow](.github/workflows/deploy.yml) publishes the repository to GitHub Pages as-is.
+---
 
-The documentation lives in a separate repository,
-[namida-docs](https://github.com/namidaco/namida-docs), served at **https://docs.namida.app**.
-
-## Preview locally
-
-```bash
-npx serve .
-```
-
-## Custom domain
-
-`CNAME` pins the apex domain. The matching DNS records and the Pages setting are described in the
-repository settings under Settings → Pages.
+#### For documentation, see [namida-docs](https://github.com/namidaco/namida-docs), Available at [docs.namida.app](https://docs.namida.app).

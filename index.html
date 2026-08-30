@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Namida &mdash; music &amp; video player</title>
+<meta name="description" content="A beautiful and feature-rich music &amp; video player with YouTube support, built in Flutter. Available on Android, Windows and Linux.">
+<link rel="icon" href="assets/favicon.ico">
+<meta property="og:title" content="Namida">
+<meta property="og:description" content="A beautiful and feature-rich music &amp; video player with YouTube support.">
+<meta property="og:image" content="https://namida.app/assets/namida_icon.png">
+<meta property="og:url" content="https://namida.app">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<style>
+  /* palette mirrors the docs' summer theme so the two sites feel like one */
+  :root {
+    --bg: #ffffff;
+    --bg-subtle: #fafafa;
+    --surface: #ffffff;
+    --border: #e5e5e5;
+    --border-strong: #cdcdcd;
+    --fg: #1d1d1d;
+    --fg-soft: #4a4a4a;
+    --fg-muted: #6e6e6e;
+    --accent: #fe551b;
+    --accent-hover: #e64500;
+    --accent-fg: #ffffff;
+    --glow: rgba(254, 85, 27, 0.13);
+    --radius: 20px;
+    --radius-sm: 12px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131110;
+      --bg-subtle: #1a1815;
+      --surface: #1d1b17;
+      --border: #2e2a23;
+      --border-strong: #3d382e;
+      --fg: #f5f0e6;
+      --fg-soft: #c5bfb0;
+      --fg-muted: #8a8473;
+      --accent: #ff8a5c;
+      --accent-hover: #ffa47d;
+      --accent-fg: #1a0d06;
+      --glow: rgba(255, 138, 92, 0.11);
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* soft warm glow behind the hero */
+  body::before {
+    content: "";
+    position: fixed;
+    top: -30vh;
+    left: 50%;
+    width: min(900px, 120vw);
+    height: min(900px, 120vw);
+    transform: translateX(-50%);
+    background: radial-gradient(circle, var(--glow) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: clamp(3rem, 12vh, 7rem) 1.25rem 3rem;
+    text-align: center;
+  }
+
+  .logo {
+    width: 104px;
+    height: 104px;
+    border-radius: 26px;
+    display: block;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  }
+
+  h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(2.5rem, 9vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .tagline {
+    margin: 0 auto 0.75rem;
+    max-width: 36ch;
+    font-size: clamp(1rem, 3.5vw, 1.125rem);
+    color: var(--fg-soft);
+  }
+
+  .platforms {
+    margin: 0 0 2.5rem;
+    font-size: 0.8125rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 3.5rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.8rem 1.6rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 200ms var(--ease), border-color 200ms var(--ease), transform 200ms var(--ease);
+  }
+
+  .btn:hover { transform: translateY(-2px); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .btn--primary { background: var(--accent); color: var(--accent-fg); }
+  .btn--primary:hover { background: var(--accent-hover); }
+
+  .btn--ghost {
+    background: var(--surface);
+    color: var(--fg);
+    border-color: var(--border);
+  }
+  .btn--ghost:hover { border-color: var(--border-strong); }
+
+  .links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    text-align: left;
+    margin-bottom: 3rem;
+  }
+
+  .card {
+    display: block;
+    padding: 1rem 1.15rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 200ms var(--ease), transform 200ms var(--ease);
+  }
+
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .card__title {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .card__desc {
+    font-size: 0.8125rem;
+    color: var(--fg-muted);
+    line-height: 1.45;
+  }
+
+  .notice {
+    padding: 0.9rem 1.15rem;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    color: var(--fg-muted);
+    text-align: left;
+    line-height: 1.55;
+  }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    padding: 2rem 1.25rem 2.5rem;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--fg-muted);
+  }
+
+  footer nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  footer a {
+    color: var(--fg-soft);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 200ms var(--ease), border-color 200ms var(--ease);
+  }
+
+  footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+    .btn:hover, .card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <img class="logo" src="assets/namida_icon.png" alt="Namida logo" width="104" height="104">
+
+  <h1>Namida</h1>
+
+  <p class="tagline">A beautiful and feature-rich music &amp; video player with YouTube support, built in Flutter.</p>
+
+  <p class="platforms">Android &middot; Windows &middot; Linux</p>
+
+  <div class="actions">
+    <a class="btn btn--primary" href="https://github.com/namidaco/namida/releases">Download</a>
+    <a class="btn btn--ghost" href="https://docs.namida.app">Documentation</a>
+  </div>
+
+  <div class="links">
+    <a class="card" href="https://github.com/namidaco/namida-snapshots/releases">
+      <div class="card__title">Beta releases</div>
+      <div class="card__desc">Snapshot builds, newer but rougher.</div>
+    </a>
+    <a class="card" href="https://github.com/namidaco/namida">
+      <div class="card__title">GitHub</div>
+      <div class="card__desc">Source code, issues and changelog.</div>
+    </a>
+    <a class="card" href="https://t.me/namida_official">
+      <div class="card__title">Telegram &mdash; Updates</div>
+      <div class="card__desc">Release announcements.</div>
+    </a>
+    <a class="card" href="https://t.me/+FmdfsgKoGmM1ZGFk">
+      <div class="card__title">Telegram &mdash; Chat</div>
+      <div class="card__desc">Talk to other users.</div>
+    </a>
+    <a class="card" href="https://discord.gg/WeY7DTVChT">
+      <div class="card__title">Discord</div>
+      <div class="card__desc">Community server.</div>
+    </a>
+    <a class="card" href="https://github.com/namidaco/namida-translations">
+      <div class="card__title">Translations</div>
+      <div class="card__desc">Help translate Namida.</div>
+    </a>
+  </div>
+
+  <p class="notice">
+    Namida is only distributed through this site, GitHub and Telegram. We are not responsible for
+    downloads from any other source.
+  </p>
+</main>
+
+<footer>
+  <nav>
+    <a href="https://patreon.com/namidaco">Patreon</a>
+    <a href="https://ko-fi.com/namidaco">Ko-fi</a>
+    <a href="https://github.com/namidaco/namida/issues">Report an issue</a>
+  </nav>
+  <div>&copy;namidaco</div>
+</footer>
+
+</body>
+</html>

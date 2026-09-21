@@ -1,0 +1,42 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.msob7y.namida",
+      "sha256_cert_fingerprints": [
+        "CB:8C:07:0C:BD:B5:E2:35:0A:CB:AC:4D:DB:1A:9D:EE:89:81:6E:CD:AF:D1:16:D4:1E:FF:C1:48:90:D9:8E:1C"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.msob7y.namida.snapshot",
+      "sha256_cert_fingerprints": [
+        "CB:8C:07:0C:BD:B5:E2:35:0A:CB:AC:4D:DB:1A:9D:EE:89:81:6E:CD:AF:D1:16:D4:1E:FF:C1:48:90:D9:8E:1C"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.msob7y.namida.debug",
+      "sha256_cert_fingerprints": [
+        "CB:8C:07:0C:BD:B5:E2:35:0A:CB:AC:4D:DB:1A:9D:EE:89:81:6E:CD:AF:D1:16:D4:1E:FF:C1:48:90:D9:8E:1C"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.msob7y.namida.snapshot.debug",
+      "sha256_cert_fingerprints": [
+        "CB:8C:07:0C:BD:B5:E2:35:0A:CB:AC:4D:DB:1A:9D:EE:89:81:6E:CD:AF:D1:16:D4:1E:FF:C1:48:90:D9:8E:1C"
+      ]
+    }
+  }
+]

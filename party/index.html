@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join a listening party - Namida</title>
+  <meta name="description" content="Open a Namida listening party invite.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/assets/favicon.ico" sizes="any">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --border: #e7e2dc;
+      --fg: #1d1d1d;
+      --fg-muted: #6e6e6e;
+      --accent: #6f4e37;
+      --accent-hover: #573c2a;
+      --accent-fg: #ffffff;
+      --radius: 20px;
+      --radius-sm: 12px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #131110;
+        --surface: #1d1b17;
+        --border: #2e2a23;
+        --fg: #f5f0e6;
+        --fg-muted: #a39b8d;
+        --accent: #c9a227;
+        --accent-hover: #b8931f;
+        --accent-fg: #1d1b17;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font);
+      line-height: 1.6;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      padding: 32px 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.4rem;
+    }
+
+    p {
+      margin: 0 0 20px;
+      color: var(--fg-muted);
+      font-size: 0.95rem;
+    }
+
+    .code {
+      display: inline-block;
+      margin: 4px 0 22px;
+      padding: 10px 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 1.7rem;
+      letter-spacing: 0.32em;
+      text-indent: 0.32em;
+    }
+
+    .btn {
+      display: block;
+      padding: 13px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+
+    .btn--primary {
+      background: var(--accent);
+      color: var(--accent-fg);
+    }
+
+    .btn--primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn--ghost {
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      color: var(--fg);
+    }
+
+    .hint {
+      margin: 18px 0 0;
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <h1>Listening party</h1>
+    <p id="intro">Opening Namida...</p>
+    <div class="code" id="code" hidden></div>
+    <a class="btn btn--primary" id="open" href="#">Open in Namida</a>
+    <a class="btn btn--ghost" href="https://github.com/namidaco/namida/releases">Get Namida</a>
+    <p class="hint">In the app, you can also join by typing the code.</p>
+  </main>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var code = (params.get('c') || '').toUpperCase();
+      var server = params.get('s');
+
+      var intro = document.getElementById('intro');
+      var openBtn = document.getElementById('open');
+
+      if (!/^[A-Z2-9]{8}$/.test(code)) {
+        intro.textContent = 'This invite link is missing a valid room code.';
+        openBtn.hidden = true;
+        return;
+      }
+
+      var codeEl = document.getElementById('code');
+      codeEl.textContent = code;
+      codeEl.hidden = false;
+
+      var deepLink = 'namida://party?c=' + encodeURIComponent(code) + (server ? '&s=' + encodeURIComponent(server) : '');
+      openBtn.href = deepLink;
+
+      // -- only phones have the app, and a failed scheme jump on desktop shows an ugly dialog
+      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        location.replace(deepLink);
+        setTimeout(function () {
+          intro.textContent = 'If nothing happened, open it manually.';
+        }, 1200);
+      } else {
+        intro.textContent = 'Open this link on the device running Namida.';
+      }
+    })();
+  </script>
+</body>
+
+</html>

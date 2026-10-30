@@ -12,45 +12,37 @@
 <meta property="og:url" content="https://namida.app">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
+<script>
+  try {
+    var savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.dataset.theme = savedTheme;
+  } catch (e) {}
+</script>
 <style>
   /* warm neutrals from the docs' summer theme, with a coffee accent */
   :root {
-    --bg: #ffffff;
-    --bg-subtle: #faf8f6;
-    --surface: #ffffff;
-    --border: #e7e2dc;
-    --border-strong: #cfc7bd;
-    --fg: #1d1d1d;
-    --fg-soft: #4a4a4a;
-    --fg-muted: #6e6e6e;
-    --accent: #6f4e37;
-    --accent-hover: #573c2a;
-    --accent-fg: #ffffff;
-    --glow: rgba(111, 78, 55, 0.13);
-    --shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    color-scheme: light dark;
+    --bg: light-dark(#ffffff, #131110);
+    --bg-subtle: light-dark(#faf8f6, #1a1815);
+    --surface: light-dark(#ffffff, #1d1b17);
+    --border: light-dark(#e7e2dc, #2e2a23);
+    --border-strong: light-dark(#cfc7bd, #3d382e);
+    --fg: light-dark(#1d1d1d, #f5f0e6);
+    --fg-soft: light-dark(#4a4a4a, #c5bfb0);
+    --fg-muted: light-dark(#6e6e6e, #8a8473);
+    --accent: light-dark(#6f4e37, #d1a077f6);
+    --accent-hover: light-dark(#573c2a, #dcb08cec);
+    --accent-fg: light-dark(#ffffff, #1a0d06);
+    --glow: light-dark(rgba(111, 78, 55, 0.13), rgba(209, 160, 119, 0.10));
+    --shadow: 0 4px 12px -2px light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.45)), 0 2px 4px -2px light-dark(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.3));
     --radius: 20px;
     --radius-sm: 12px;
     --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #131110;
-      --bg-subtle: #1a1815;
-      --surface: #1d1b17;
-      --border: #2e2a23;
-      --border-strong: #3d382e;
-      --fg: #f5f0e6;
-      --fg-soft: #c5bfb0;
-      --fg-muted: #8a8473;
-      --accent: #d1a077f6;
-      --accent-hover: #dcb08cec;
-      --accent-fg: #1a0d06;
-      --glow: rgba(209, 160, 119, 0.10);
-      --shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.45), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-    }
-  }
+  :root[data-theme="light"] { color-scheme: light; }
+  :root[data-theme="dark"] { color-scheme: dark; }
 
   :root {
     --docs-tour-bg: var(--bg);
@@ -191,6 +183,45 @@
   }
   .btn--ghost:hover { border-color: var(--border-strong); }
 
+  .theme-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--fg-soft);
+    cursor: pointer;
+    transition: border-color 200ms var(--ease), color 200ms var(--ease);
+  }
+
+  .theme-toggle:hover { border-color: var(--border-strong); color: var(--fg); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .theme-toggle[hidden] { display: none; }
+
+  .theme-toggle .icon {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+    transition: opacity 400ms var(--ease), transform 800ms var(--ease);
+  }
+
+  .theme-toggle[data-mode="system"] .icon--system,
+  .theme-toggle[data-mode="light"] .icon--light,
+  .theme-toggle[data-mode="dark"] .icon--dark { opacity: 1; transform: none; }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
   .links {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -278,6 +309,63 @@
 </style>
 </head>
 <body>
+
+<button class="theme-toggle" id="theme-toggle" type="button" hidden>
+  <svg class="icon icon--system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+  <svg class="icon icon--light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+  <svg class="icon icon--dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+</button>
+<script>
+  (function () {
+    var MODES = ['system', 'light', 'dark'];
+    var CAN_VIEW_TRANSITION = 'startViewTransition' in document;
+    var REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var root = document.documentElement;
+    var toggle = document.getElementById('theme-toggle');
+
+    function apply(mode) {
+      if (mode === 'system') delete root.dataset.theme;
+      else root.dataset.theme = mode;
+      var label = 'Theme: ' + mode;
+      toggle.dataset.mode = mode;
+      toggle.title = label;
+      toggle.setAttribute('aria-label', label);
+    }
+
+    function revealFromToggle(mode) {
+      if (!CAN_VIEW_TRANSITION || REDUCED_MOTION.matches) {
+        apply(mode);
+        return;
+      }
+      var rect = toggle.getBoundingClientRect();
+      var x = rect.left + rect.width / 2;
+      var y = rect.top + rect.height / 2;
+      var farX = Math.max(x, innerWidth - x);
+      var farY = Math.max(y, innerHeight - y);
+      var radius = Math.hypot(farX, farY);
+      var transition = document.startViewTransition(function () { apply(mode); });
+      transition.ready.then(function () {
+        var center = ' at ' + x + 'px ' + y + 'px)';
+        var clipPath = ['circle(0px' + center, 'circle(' + radius + 'px' + center];
+        root.animate({ clipPath: clipPath }, { duration: 800, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', pseudoElement: '::view-transition-new(root)' });
+      });
+    }
+
+    toggle.addEventListener('click', function () {
+      var nextIndex = (MODES.indexOf(toggle.dataset.mode) + 1) % MODES.length;
+      var next = MODES[nextIndex];
+      revealFromToggle(next);
+      try {
+        if (next === 'system') localStorage.removeItem('theme');
+        else localStorage.setItem('theme', next);
+      } catch (e) {}
+    });
+
+    var initialMode = root.dataset.theme || 'system';
+    apply(initialMode);
+    toggle.hidden = false;
+  })();
+</script>
 
 <main>
   <section class="hero">
